@@ -1,35 +1,96 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "/vite.svg";
+import "./App.css";
+
+const welcome = {
+  greeting: "Hey",
+  title: "React",
+};
+
+const list1 = [
+  {
+    title: "React",
+    url: "http://reactjs.org/",
+    author: "Jordan Walke",
+    num_comments: 3,
+    points: 4,
+    objectID: 0,
+  },
+  {
+    title: "Redux",
+    url: "http://redux.js.org/",
+    author: "Dan Abramov, Andrew Clark",
+    num_comments: 2,
+    points: 5,
+    objectID: 1,
+  },
+];
+
+const list2 = [
+  {
+    title: "Me",
+    url: "http://reactjs.org/",
+    author: "Michael LaCreta",
+    num_comments: 5,
+    points: 6,
+    objectID: 0,
+  },
+  {
+    title: "Not Me",
+    url: "http://redux.js.org/",
+    author: "Yo LaCreta",
+    num_comments: 2,
+    points: 5,
+    objectID: 1,
+  },
+];
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div>
+      <h1>
+        {welcome.greeting} {welcome.title}
+      </h1>
+
+      <Search />
+
+      <hr />
+
+      <List list={list1} />
+      <List list={list2} />
+    </div>
+  );
 }
 
-export default App
+function List(props){
+  return(
+    <ul>
+        {props.list.map(function (item) {
+          return (
+            <li key={item.objectID}>
+              <span>
+                <a href={item.url}>{item.title}</a>
+              </span>
+              <span>{item.author}</span>
+              <span>{item.num_comments}</span>
+              <span>{item.points}</span>
+            </li>
+          );
+        })}
+      </ul>
+  );
+}
+
+function Search(){
+  return(
+    <div>
+    <label htmlFor="search">Search: </label>
+    <input id="search" type="text" />
+    </div>
+
+  );
+
+}
+
+export default App;

@@ -63,9 +63,11 @@ const Item = (props) => (
 );
 
 const Search = () => {
+
+  let searchTerm = '';
+
   const handleChange = (event) => {
-    console.log(event); // Event
-    console.log(event.target.value); // Value
+    searchTerm = event.target.value; // Value
   };
 
   return (

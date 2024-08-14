@@ -8,45 +8,26 @@ const welcome = {
   title: "React",
 };
 
-const list1 = [
-  {
-    title: "React",
-    url: "http://reactjs.org/",
-    author: "Jordan Walke",
-    num_comments: 3,
-    points: 4,
-    objectID: 0,
-  },
-  {
-    title: "Redux",
-    url: "http://redux.js.org/",
-    author: "Dan Abramov, Andrew Clark",
-    num_comments: 2,
-    points: 5,
-    objectID: 1,
-  },
-];
-
-const list2 = [
-  {
-    title: "Me",
-    url: "http://reactjs.org/",
-    author: "Michael LaCreta",
-    num_comments: 5,
-    points: 6,
-    objectID: 0,
-  },
-  {
-    title: "Not Me",
-    url: "http://redux.js.org/",
-    author: "Yo LaCreta",
-    num_comments: 2,
-    points: 5,
-    objectID: 1,
-  },
-];
-
 const App = () => {
+  const stories = [
+    {
+      title: "React",
+      url: "http://reactjs.org/",
+      author: "Jordan Walke",
+      num_comments: 3,
+      points: 4,
+      objectID: 0,
+    },
+    {
+      title: "Redux",
+      url: "http://redux.js.org/",
+      author: "Dan Abramov, Andrew Clark",
+      num_comments: 2,
+      points: 5,
+      objectID: 1,
+    },
+  ];
+
   return (
     <div>
       <h1>
@@ -57,34 +38,42 @@ const App = () => {
 
       <hr />
 
-      <List list={list1} />
-      <List list={list2} />
+      <List list={stories} />
     </div>
   );
 };
 
 const List = (props) => (
-    <ul>
-        {props.list.map((item) => {
-          return (
-            <li key={item.objectID}>
-              <span>
-                <a href={item.url}>{item.title}</a>
-              </span>
-              <span>{item.author}</span>
-              <span>{item.num_comments}</span>
-              <span>{item.points}</span>
-            </li>
-          );
-        })}
-      </ul>
+  <ul>
+    {props.list.map((item) => (
+      <Item key={item.objectID} item={item} />
+    ))}
+  </ul>
 );
 
-const Search = () => (
-    <div>
-    <label htmlFor="search">Search: </label>
-    <input id="search" type="text" />
-    </div>
+const Item = (props) => (
+  <li>
+    <span>
+      <a href={props.item.url}>{props.item.title}</a>
+    </span>
+    <span>{props.item.author}</span>
+    <span>{props.item.num_comments}</span>
+    <span>{props.item.points}</span>
+  </li>
 );
+
+const Search = () => {
+  const handleChange = (event) => {
+    console.log(event); // Event
+    console.log(event.target.value); // Value
+  };
+
+  return (
+    <div>
+      <label htmlFor="search">Search: </label>
+      <input id="search" type="text" onChange={handleChange} />
+    </div>
+  );
+};
 
 export default App;

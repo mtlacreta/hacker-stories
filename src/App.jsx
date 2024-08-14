@@ -46,7 +46,7 @@ const list2 = [
   },
 ];
 
-function App() {
+const App = () => {
   return (
     <div>
       <h1>
@@ -61,12 +61,11 @@ function App() {
       <List list={list2} />
     </div>
   );
-}
+};
 
-function List(props){
-  return(
+const List = (props) => (
     <ul>
-        {props.list.map(function (item) {
+        {props.list.map((item) => {
           return (
             <li key={item.objectID}>
               <span>
@@ -79,18 +78,13 @@ function List(props){
           );
         })}
       </ul>
-  );
-}
+);
 
-function Search(){
-  return(
+const Search = () => (
     <div>
     <label htmlFor="search">Search: </label>
     <input id="search" type="text" />
     </div>
-
-  );
-
-}
+);
 
 export default App;

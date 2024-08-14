@@ -9,6 +9,13 @@ const welcome = {
 };
 
 const App = () => {
+
+  console.log('App Rerenders');
+
+  const handleSearch = (event) => {
+    console.log(event.target.value);
+  }; 
+
   const stories = [
     {
       title: "React",
@@ -34,7 +41,7 @@ const App = () => {
         {welcome.greeting} {welcome.title}
       </h1>
 
-      <Search />
+      <Search onSearch={handleSearch}/>
 
       <hr />
 
@@ -43,13 +50,17 @@ const App = () => {
   );
 };
 
-const List = (props) => (
+const List = (props) => {
+  console.log('List Rerenders');
+
+  return(
   <ul>
     {props.list.map((item) => (
       <Item key={item.objectID} item={item} />
     ))}
   </ul>
-);
+  );
+};
 
 const Item = (props) => (
   <li>
@@ -62,18 +73,25 @@ const Item = (props) => (
   </li>
 );
 
-const Search = () => {
+const Search = (props) => {
 
-  let searchTerm = '';
+  console.log('Search Rerenders');
+
+  const[searchTerm, setSearchTerm]  = useState('');
 
   const handleChange = (event) => {
-    searchTerm = event.target.value; // Value
+    setSearchTerm(event.target.value);
+    props.onSearch(event);
   };
 
   return (
     <div>
       <label htmlFor="search">Search: </label>
       <input id="search" type="text" onChange={handleChange} />
+
+      <p>
+        Searching for <strong>{searchTerm}</strong>.
+      </p>
     </div>
   );
 };

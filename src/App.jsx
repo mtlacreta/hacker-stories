@@ -3,19 +3,7 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 
-const welcome = {
-  greeting: "Hey",
-  title: "React",
-};
-
 const App = () => {
-
-  console.log('App Rerenders');
-
-  const handleSearch = (event) => {
-    console.log(event.target.value);
-  }; 
-
   const stories = [
     {
       title: "React",
@@ -35,65 +23,53 @@ const App = () => {
     },
   ];
 
+  const [searchTerm, setSearchTerm] = useState("React");
+
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const searchedStories = stories.filter((story) =>
+    story.title.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+  );
+
   return (
     <div>
-      <h1>
-        {welcome.greeting} {welcome.title}
-      </h1>
+      <h1>My Hacker Stories</h1>
 
-      <Search onSearch={handleSearch}/>
+      <Search search={searchTerm} onSearch={handleSearch} />
 
       <hr />
 
-      <List list={stories} />
+      <List list={searchedStories} />
     </div>
   );
 };
 
-const List = (props) => {
-  console.log('List Rerenders');
-
-  return(
+const List = ({ list }) => (
   <ul>
-    {props.list.map((item) => (
+    {list.map((item) => (
       <Item key={item.objectID} item={item} />
     ))}
   </ul>
-  );
-};
+);
 
-const Item = (props) => (
+const Item = ({ item }) => (
   <li>
     <span>
-      <a href={props.item.url}>{props.item.title}</a>
+      <a href={item.url}>{item.title}</a>
     </span>
-    <span>{props.item.author}</span>
-    <span>{props.item.num_comments}</span>
-    <span>{props.item.points}</span>
+    <span>{item.author}</span>
+    <span>{item.num_comments}</span>
+    <span>{item.points}</span>
   </li>
 );
 
-const Search = (props) => {
-
-  console.log('Search Rerenders');
-
-  const[searchTerm, setSearchTerm]  = useState('');
-
-  const handleChange = (event) => {
-    setSearchTerm(event.target.value);
-    props.onSearch(event);
-  };
-
-  return (
-    <div>
-      <label htmlFor="search">Search: </label>
-      <input id="search" type="text" onChange={handleChange} />
-
-      <p>
-        Searching for <strong>{searchTerm}</strong>.
-      </p>
-    </div>
-  );
-};
+const Search = ({ search, onSearch }) => (
+  <div>
+    <label htmlFor="search">Search: </label>
+    <input id="search" type="text" onChange={onSearch} value={search} />
+  </div>
+);
 
 export default App;

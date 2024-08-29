@@ -1,0 +1,32 @@
+const sortArray = (elements) => {
+   const sorted = elements.sort((a,b) => a.text.length -b.text.length);
+   return sorted;   
+  };
+  
+  const reduceArray = (elements) => {
+  	const total = elements.reduce((prevValue, currentValue) => prevValue + currentValue.number, 0);
+    return total;
+  }
+  
+  const filterArray = (elements) => {
+  	const filter = elements.filter(i => i.number % 3 == 0);
+    return filter; 
+  }
+
+  
+  const modifiedState = sortArray(this.state.items); // Sort Results
+  const reducedState = reduceArray(this.state.items); // Create new value from result
+  const filterState = filterArray(this.state.items); // Decrease Results
+  
+  console.log(modifiedState);
+  console.log(reducedState);
+  console.log(filterState);
+
+  {filterState.map((item => 
+    <li key={item.id}>
+      <label>
+        <input type="checkbox" disabled readOnly checked={item.done} /> 
+        <span className={item.done ? "done" : ""}>{item.text}</span>
+      </label>
+    </li>
+  ))}

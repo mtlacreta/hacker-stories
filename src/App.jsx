@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Button } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
@@ -32,6 +32,17 @@ const initialStories = [
   },
 ];
 
+const moreStories = [
+  {
+    title: "React2",
+    url: "http://reactjs.org/",
+    author: "Michael LaCreta",
+    num_comments: 3,
+    points: 4,
+    objectID: 2,
+  },
+];
+
 const getAsyncStories = () =>
   new Promise((resolve) =>
     setTimeout(() => resolve({ data: { stories: initialStories } }), 2000)
@@ -51,6 +62,11 @@ const App = () => {
   const handleRemoveStory = (item) => {
     const newStories = stories.filter((s) => item.objectID !== s.objectID);
     setStories(newStories);
+  };
+
+  const handleAddStory = (item) => {
+    const newStories2 = stories.concat(item);
+    setStories(newStories2);
   };
 
   const handleSearch = (event) => {
@@ -74,11 +90,9 @@ const App = () => {
         <strong>Search:</strong>
       </InputWithLabel>
 
-      {/* 
-      <InputWithLabel id="Drop" value="Yo" type="checkbox">
-        Select Checkbox:
-      </InputWithLabel>
-      */}
+      <button type="button" onClick={() => handleAddStory(moreStories)}>
+        Click Me
+      </button>
 
       <hr />
 

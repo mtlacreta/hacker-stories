@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, Button } from "react";
+import { useState, useEffect, useRef, Button, act, useReducer } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
@@ -48,15 +48,31 @@ const getAsyncStories = () =>
     setTimeout(() => resolve({ data: { stories: initialStories } }), 2000)
   );
 
+const storiesReducer = (state, action) => {
+  if (action.type === "SET_STORIES") {
+    return action.payload;
+  } else {
+    throw new Error();
+  }
+};
+
 const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState("search", "React");
 
-  const [stories, setStories] = useState([]);
+  const [stories, dispatchStories] = useReducer(storiesReducer, []);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
-    getAsyncStories().then((result) => {
-      setStories(result.data.stories);
-    });
+    setIsLoading(true);
+
+    getAsyncStories()
+      .then((result) => {
+        setStories(result.data.stories);
+        setIsLoading(false);
+      })
+      .catch(() => isError);
   }, []);
 
   const handleRemoveStory = (item) => {
@@ -91,12 +107,18 @@ const App = () => {
       </InputWithLabel>
 
       <button type="button" onClick={() => handleAddStory(moreStories)}>
-        Click Me
+        Add:
       </button>
 
       <hr />
 
-      <List list={searchedStories} onRemoveItem={handleRemoveStory} />
+      {isError && <p>Something went wrong ...</p>}
+
+      {isLoading ? (
+        <p>Loading.....</p>
+      ) : (
+        <List list={searchedStories} onRemoveItem={handleRemoveStory} />
+      )}
     </div>
   );
 };

@@ -32,20 +32,6 @@ const initialStories = [
   },
 ];
 
-const moreStories = [
-  {
-    title: "React2",
-    url: "http://reactjs.org/",
-    author: "Michael LaCreta",
-    num_comments: 3,
-    points: 4,
-    objectID: 2,
-  },
-];
-
-const getAsyncStories = () =>
-  new Promise((resolve, reject) => setTimeout(reject, 2000));
-
 const storiesReducer = (state, action) => {
   switch (action.type) {
     case 'STORIES_FETCH_INIT':
@@ -79,6 +65,8 @@ const storiesReducer = (state, action) => {
   }
 };
 
+const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
+
 const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState("search", "React");
 
@@ -86,18 +74,16 @@ const App = () => {
     storiesReducer,
      {data: [], isLoading: false, isError:false});
 
-  //const [isLoading, setIsLoading] = useState(false);
-  //const [isError, setIsError] = useState(false);
-
   useEffect(() => {
 
     dispatchStories({type:'STORIES_FETCH_INIT'});
     
-    getAsyncStories()
+    fetch(`${API_ENDPOINT}react`)
+    .then((response) => response.json())
       .then((result) => {
         dispatchStories({
-          type: 'STORIES_FETCH_SUCEESS',
-          payload: result.data.stories,});
+          type: 'STORIES_FETCH_SUCCESS',
+          payload: result.hits});
       })
       .catch(() =>  dispatchStories({type:'STORIES_FETCH_FAILURE'})
     );
@@ -106,12 +92,6 @@ const App = () => {
   const handleRemoveStory = (item) => {
     dispatchStories({type:'REMOVE_STORY', payload: item});
   };
-{/* 
-  const handleAddStory = (item) => {
-    const newStories2 = stories.concat(item);
-    setStories(newStories2);
-  };
-  */}
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
@@ -133,12 +113,6 @@ const App = () => {
       >
         <strong>Search:</strong>
       </InputWithLabel>
-
-{/*
-      <button type="button" onClick={() => handleAddStory(moreStories)}>
-        Add:
-      </button>
-      */}
 
       <hr />
 

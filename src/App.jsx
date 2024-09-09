@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef, Button, act, useReducer, useCallback } from "react";
 import axios from "axios";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
 
 const useStorageState = (key, initialState) => {

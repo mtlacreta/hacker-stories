@@ -13,25 +13,6 @@ const useStorageState = (key, initialState) => {
   return [value, setValue];
 };
 
-const initialStories = [
-  {
-    title: "React",
-    url: "http://reactjs.org/",
-    author: "Jordan Walke",
-    num_comments: 3,
-    points: 4,
-    objectID: 0,
-  },
-  {
-    title: "Redux",
-    url: "http://redux.js.org/",
-    author: "Dan Abramov, Andrew Clark",
-    num_comments: 2,
-    points: 5,
-    objectID: 1,
-  },
-];
-
 const storiesReducer = (state, action) => {
   switch (action.type) {
     case 'STORIES_FETCH_INIT':
@@ -109,10 +90,6 @@ const App = () => {
     setUrl(`${API_ENDPOINT}${searchTerm}`)
   };
 
-  const searchedStories = stories.data.filter((story) =>
-    story.title.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
-  );
-
   return (
     <div>
       <h1>My Hacker Stories</h1>
@@ -155,20 +132,21 @@ const InputWithLabel = ({
   onInputChange,
   children,
 }) => {
-  const inputRef = useRef();
+  //const inputRef = useRef();
 
-  useEffect(() => {
-    if (isFocused && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isFocused]);
+  //useEffect(() => {
+  //  if (isFocused && inputRef.current) {
+  //    inputRef.current.focus();
+  //  }
+  //}, [isFocused]);
 
   return (
     <>
       <label htmlFor={id}>{children}</label>
       &nbsp;
       <input
-        ref={inputRef}
+        autoFocus={isFocused}
+        //ref={inputRef}
         id={id}
         type={type}
         onChange={onInputChange}
@@ -177,9 +155,6 @@ const InputWithLabel = ({
     </>
   );
 };
-
-// note that 'autoFocus' is a shorthand for 'autoFocus=true'
-// every attribute that is set to 'true' can use this shorthand
 
 const List = ({ list, onRemoveItem }) => (
   <ul>

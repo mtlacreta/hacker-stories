@@ -129,13 +129,6 @@ const InputWithLabel = ({
   onInputChange,
   children,
 }) => {
-  //const inputRef = useRef();
-
-  //useEffect(() => {
-  //  if (isFocused && inputRef.current) {
-  //    inputRef.current.focus();
-  //  }
-  //}, [isFocused]);
 
   return (
     <>
@@ -143,7 +136,6 @@ const InputWithLabel = ({
       &nbsp;
       <input
         autoFocus={isFocused}
-        //ref={inputRef}
         id={id}
         type={type}
         onChange={onInputChange}

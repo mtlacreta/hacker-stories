@@ -63,16 +63,12 @@ const App = () => {
     if(!searchTerm) return;
 
     dispatchStories({type:'STORIES_FETCH_INIT'});
-    
+    try{
     const result = await axios.get(url);
-    //.then((response) => response.json())
-      //.then((result) => {
         dispatchStories({
           type: 'STORIES_FETCH_SUCCESS',
           payload: result.data.hits});
-      //})
-      //.catch(() =>  dispatchStories({type:'STORIES_FETCH_FAILURE'})
-    //);
+        }catch{ dispatchStories({type:'STORIES_FETCH_FAILURE'})}
   }, [url]);
 
   useEffect(() => {

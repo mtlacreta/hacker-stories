@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, Button, act, useReducer, useCallback } from "react";
+import axios from "axios";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
@@ -57,21 +58,21 @@ const App = () => {
     storiesReducer,
      {data: [], isLoading: false, isError:false});
 
-  const handleFetchStories = useCallback(() => {
+  const handleFetchStories = useCallback(async () => {
 
     if(!searchTerm) return;
 
     dispatchStories({type:'STORIES_FETCH_INIT'});
     
-    fetch(url)
-    .then((response) => response.json())
-      .then((result) => {
+    const result = await axios.get(url);
+    //.then((response) => response.json())
+      //.then((result) => {
         dispatchStories({
           type: 'STORIES_FETCH_SUCCESS',
-          payload: result.hits});
-      })
-      .catch(() =>  dispatchStories({type:'STORIES_FETCH_FAILURE'})
-    );
+          payload: result.data.hits});
+      //})
+      //.catch(() =>  dispatchStories({type:'STORIES_FETCH_FAILURE'})
+    //);
   }, [url]);
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, Button, act, useReducer } from "react";
+import { useState, useEffect, useRef, Button, act, useReducer, useCallback } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
@@ -70,15 +70,19 @@ const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState("search", "React");
 
+  const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`);
+
   const [stories, dispatchStories] = useReducer(
     storiesReducer,
      {data: [], isLoading: false, isError:false});
 
-  useEffect(() => {
+  const handleFetchStories = useCallback(() => {
+
+    if(!searchTerm) return;
 
     dispatchStories({type:'STORIES_FETCH_INIT'});
     
-    fetch(`${API_ENDPOINT}react`)
+    fetch(url)
     .then((response) => response.json())
       .then((result) => {
         dispatchStories({
@@ -87,14 +91,22 @@ const App = () => {
       })
       .catch(() =>  dispatchStories({type:'STORIES_FETCH_FAILURE'})
     );
-  }, []);
+  }, [url]);
+
+  useEffect(() => {
+    handleFetchStories();
+  },[handleFetchStories]);
 
   const handleRemoveStory = (item) => {
     dispatchStories({type:'REMOVE_STORY', payload: item});
   };
 
-  const handleSearch = (event) => {
+  const handleSearchInput = (event) => {
     setSearchTerm(event.target.value);
+  };
+
+  const handleSearchSubmit = () => {
+    setUrl(`${API_ENDPOINT}${searchTerm}`)
   };
 
   const searchedStories = stories.data.filter((story) =>
@@ -109,10 +121,18 @@ const App = () => {
         id="search"
         value={searchTerm}
         isFocused
-        onInputChange={handleSearch}
+        onInputChange={handleSearchInput}
       >
         <strong>Search:</strong>
       </InputWithLabel>
+
+      <button
+        id="searchButton"
+        type="button"
+        disabled={!searchTerm}
+        onClick={handleSearchSubmit}>
+          Submit
+      </button>
 
       <hr />
 
@@ -121,7 +141,7 @@ const App = () => {
       {stories.isLoading ? (
         <p>Loading.....</p>
       ) : (
-        <List list={searchedStories} onRemoveItem={handleRemoveStory} />
+        <List list={stories.data} onRemoveItem={handleRemoveStory} />
       )}
     </div>
   );

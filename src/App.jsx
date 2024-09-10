@@ -40,6 +40,11 @@ const storiesReducer = (state, action) => {
           (story) => action.payload.objectID !== story.objectID
         ),
       };
+    case 'ADD_STORY':
+      return{
+        ...state,
+        data: state.data.concat({url: "Add Story", title:"You Added a New Story", author: "LaCreta", num_comments: "3", points: 2 }),
+      }
     default:
       throw new Error();
   }
@@ -49,6 +54,8 @@ const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState("search", "React");
+  //const [addTerm, setAddTerm] = useStorageState("add", "");
+
 
   const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`);
 
@@ -73,6 +80,10 @@ const App = () => {
     handleFetchStories();
   },[handleFetchStories]);
 
+  const handleAddStory = () => {
+    dispatchStories({type:'ADD_STORY'});
+  };
+
   const handleRemoveStory = (item) => {
     dispatchStories({type:'REMOVE_STORY', payload: item});
   };
@@ -83,12 +94,20 @@ const App = () => {
 
   const handleSearchSubmit = (event) => {
     setUrl(`${API_ENDPOINT}${searchTerm}`)
-    event.preventDefault();
+    event.preventDefault(); // Prevents Default action on rerenders
   };
 
   return (
     <div>
       <h1>My Hacker Stories</h1>
+
+      <button
+        type="button"
+        //disabled={!addTerm}
+        onClick={handleAddStory}
+        >
+          Add Story
+      </button>
 
       <SearchForm searchTerm={searchTerm} onSearchInput={handleSearchInput} onSearchSubmit={handleSearchSubmit} />
 

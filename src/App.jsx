@@ -1,4 +1,12 @@
-import { useState, useEffect, useRef, Button, act, useReducer, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  Button,
+  act,
+  useReducer,
+  useCallback,
+} from "react";
 import axios from "axios";
 import "./App.css";
 
@@ -14,86 +22,99 @@ const useStorageState = (key, initialState) => {
 
 const storiesReducer = (state, action) => {
   switch (action.type) {
-    case 'STORIES_FETCH_INIT':
+    case "STORIES_FETCH_INIT":
       return {
         ...state,
         isLoading: true,
         isError: false,
       };
-    case 'STORIES_FETCH_SUCCESS':
+    case "STORIES_FETCH_SUCCESS":
       return {
         ...state,
         isLoading: false,
         isError: false,
         data: action.payload,
       };
-    case 'STORIES_FETCH_FAILURE':
+    case "STORIES_FETCH_FAILURE":
       return {
         ...state,
         isLoading: false,
         isError: true,
       };
-    case 'REMOVE_STORY':
+    case "REMOVE_STORY":
       return {
         ...state,
         data: state.data.filter(
           (story) => action.payload.objectID !== story.objectID
         ),
       };
-    case 'ADD_STORY':
-      return{
+    case "ADD_STORY":
+      return {
         ...state,
-        data: state.data.concat({url: "Add Story", title:"You Added a New Story", author: "LaCreta", num_comments: "3", points: 2 }),
-      }
+        data: state.data.concat({
+          url: "Add Story",
+          title: "",
+          author: "LaCreta",
+          num_comments: "3",
+          points: 2,
+        }),
+      };
     default:
       throw new Error();
   }
 };
 
-const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
+const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState("search", "React");
-  //const [addTerm, setAddTerm] = useStorageState("add", "");
-
+  const [addTerm, setAddTerm] = useStorageState("add", "");
 
   const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`);
 
-  const [stories, dispatchStories] = useReducer(
-    storiesReducer,
-     {data: [], isLoading: false, isError:false});
+  const [stories, dispatchStories] = useReducer(storiesReducer, {
+    data: [],
+    isLoading: false,
+    isError: false,
+  });
 
   const handleFetchStories = useCallback(async () => {
+    if (!searchTerm) return;
 
-    if(!searchTerm) return;
-
-    dispatchStories({type:'STORIES_FETCH_INIT'});
-    try{
-    const result = await axios.get(url);
-        dispatchStories({
-          type: 'STORIES_FETCH_SUCCESS',
-          payload: result.data.hits});
-        }catch{ dispatchStories({type:'STORIES_FETCH_FAILURE'})}
+    dispatchStories({ type: "STORIES_FETCH_INIT" });
+    try {
+      const result = await axios.get(url);
+      dispatchStories({
+        type: "STORIES_FETCH_SUCCESS",
+        payload: result.data.hits,
+      });
+    } catch {
+      dispatchStories({ type: "STORIES_FETCH_FAILURE" });
+    }
   }, [url]);
 
   useEffect(() => {
     handleFetchStories();
-  },[handleFetchStories]);
+  }, [handleFetchStories]);
 
-  const handleAddStory = () => {
-    dispatchStories({type:'ADD_STORY'});
+  const handleAddStory = (item) => {
+    dispatchStories({ type: "ADD_STORY", payload: item });
   };
 
   const handleRemoveStory = (item) => {
-    dispatchStories({type:'REMOVE_STORY', payload: item});
+    dispatchStories({ type: "REMOVE_STORY", payload: item });
   };
 
   const handleSearchInput = (event) => {
     setSearchTerm(event.target.value);
   };
 
+  const handleAddInput = (event) => {
+    setAddTerm(event.target.value);
+  };
+
   const handleSearchSubmit = (event) => {
-    setUrl(`${API_ENDPOINT}${searchTerm}`)
+    setUrl(`${API_ENDPOINT}${searchTerm}`);
     event.preventDefault(); // Prevents Default action on rerenders
   };
 
@@ -101,15 +122,30 @@ const App = () => {
     <div>
       <h1>My Hacker Stories</h1>
 
-      <button
-        type="button"
-        //disabled={!addTerm}
-        onClick={handleAddStory}
+      <form onSubmit={handleAddStory}>
+        <InputWithLabel
+          id="add"
+          value={addTerm}
+          isFocused={false}
+          onInputChange={handleAddInput}
+        >
+          <strong>Add Story:</strong>
+        </InputWithLabel>
+
+        <button
+          type="submit"
+          disabled={!addTerm}
+          //onClick={handleAddStory}
         >
           Add Story
-      </button>
+        </button>
+      </form>
 
-      <SearchForm searchTerm={searchTerm} onSearchInput={handleSearchInput} onSearchSubmit={handleSearchSubmit} />
+      <SearchForm
+        searchTerm={searchTerm}
+        onSearchInput={handleSearchInput}
+        onSearchSubmit={handleSearchSubmit}
+      />
 
       <hr />
 
@@ -118,33 +154,27 @@ const App = () => {
       {stories.isLoading ? (
         <p>Loading.....</p>
       ) : (
-        <List list={stories.data} onRemoveItem={handleRemoveStory} />
+        <List list={stories.data} onRemoveItem={handleRemoveStory(addTerm)} />
       )}
     </div>
   );
 };
 
-const SearchForm = ({
-  searchTerm,
-  onSearchInput,
-  onSearchSubmit }) => (
+const SearchForm = ({ searchTerm, onSearchInput, onSearchSubmit }) => (
+  <form onSubmit={onSearchSubmit}>
+    <InputWithLabel
+      id="search"
+      value={searchTerm}
+      isFocused
+      onInputChange={onSearchInput}
+    >
+      <strong>Search:</strong>
+    </InputWithLabel>
 
-    <form onSubmit={onSearchSubmit}>
-      <InputWithLabel
-        id="search"
-        value={searchTerm}
-        isFocused
-        onInputChange={onSearchInput}
-      >
-        <strong>Search:</strong>
-      </InputWithLabel>
-
-      <button
-        type="submit"
-        disabled={!searchTerm}>
-          Submit
-      </button>
-      </form>
+    <button type="submit" disabled={!searchTerm}>
+      Submit
+    </button>
+  </form>
 );
 
 const InputWithLabel = ({
@@ -155,7 +185,6 @@ const InputWithLabel = ({
   onInputChange,
   children,
 }) => {
-
   return (
     <>
       <label htmlFor={id}>{children}</label>
@@ -202,4 +231,3 @@ const Item = ({ item, onRemoveItem }) => {
 };
 
 export default App;
-

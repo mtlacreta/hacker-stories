@@ -1,12 +1,4 @@
-import {
-  useState,
-  useEffect,
-  useRef,
-  Button,
-  act,
-  useReducer,
-  useCallback,
-} from "react";
+import { useState, useEffect, useReducer, useCallback } from "react";
 import axios from "axios";
 import "./App.css";
 
@@ -53,10 +45,11 @@ const storiesReducer = (state, action) => {
         ...state,
         data: state.data.concat({
           url: "Add Story",
-          title: "",
+          title: action.payload.title,
           author: "LaCreta",
           num_comments: "3",
           points: 2,
+          objectID: Math.random(),
         }),
       };
     default:
@@ -115,31 +108,29 @@ const App = () => {
 
   const handleSearchSubmit = (event) => {
     setUrl(`${API_ENDPOINT}${searchTerm}`);
-    event.preventDefault(); // Prevents Default action on rerenders
+    event.preventDefault();
   };
 
   return (
     <div>
       <h1>My Hacker Stories</h1>
 
-      <form onSubmit={handleAddStory}>
-        <InputWithLabel
-          id="add"
-          value={addTerm}
-          isFocused={false}
-          onInputChange={handleAddInput}
-        >
-          <strong>Add Story:</strong>
-        </InputWithLabel>
+      <InputWithLabel
+        id="add"
+        value={addTerm}
+        isFocused={false}
+        onInputChange={handleAddInput}
+      >
+        <strong>Add Story:</strong>
+      </InputWithLabel>
 
-        <button
-          type="submit"
-          disabled={!addTerm}
-          //onClick={handleAddStory}
-        >
-          Add Story
-        </button>
-      </form>
+      <button
+        type="submit"
+        disabled={!addTerm}
+        onClick={() => handleAddStory({ title: addTerm })}
+      >
+        Add Story
+      </button>
 
       <SearchForm
         searchTerm={searchTerm}
@@ -154,7 +145,7 @@ const App = () => {
       {stories.isLoading ? (
         <p>Loading.....</p>
       ) : (
-        <List list={stories.data} onRemoveItem={handleRemoveStory(addTerm)} />
+        <List list={stories.data} onRemoveItem={handleRemoveStory} />
       )}
     </div>
   );
@@ -171,7 +162,7 @@ const SearchForm = ({ searchTerm, onSearchInput, onSearchSubmit }) => (
       <strong>Search:</strong>
     </InputWithLabel>
 
-    <button type="submit" disabled={!searchTerm}>
+    <button type="button" disabled={!searchTerm}>
       Submit
     </button>
   </form>
@@ -209,10 +200,6 @@ const List = ({ list, onRemoveItem }) => (
 );
 
 const Item = ({ item, onRemoveItem }) => {
-  const handleRemoveItem = () => {
-    onRemoveItem(item);
-  };
-
   return (
     <li>
       <span>
@@ -222,7 +209,7 @@ const Item = ({ item, onRemoveItem }) => {
       <span>{item.num_comments}</span>
       <span>{item.points}</span>
       <span>
-        <button type="button" onClick={() => handleRemoveItem(item)}>
+        <button type="button" onClick={() => onRemoveItem(item)}>
           Dismiss
         </button>
       </span>

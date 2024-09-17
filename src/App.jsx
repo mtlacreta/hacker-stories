@@ -40,6 +40,22 @@ const storiesReducer = (state, action) => {
           (story) => action.payload.objectID !== story.objectID
         ),
       };
+    case 'EDIT_STORY': {
+        const newList = state.data.map((item) => {
+          if (item.objectID === action.payload.objectID) {
+            const updatedItem = {
+              ...item,
+              title: action.payload.title,
+            };
+  
+            return updatedItem;
+          }
+  
+          return item;
+        });
+  
+        return { ...state, data: newList };
+    }
     case "ADD_STORY":
       return {
         ...state,
@@ -62,6 +78,8 @@ const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
 const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState("search", "React");
   const [addTerm, setAddTerm] = useStorageState("add", "");
+  const [editTerm, setEditTerm] = useStorageState("edit", "");
+
 
   const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`);
 
@@ -98,6 +116,10 @@ const App = () => {
     dispatchStories({ type: "REMOVE_STORY", payload: item });
   };
 
+  const handleEditStory = (item) => {
+    dispatchStories({ type: "EDIT_STORY", payload: item })
+  }
+
   const handleSearchInput = (event) => {
     setSearchTerm(event.target.value);
   };
@@ -105,6 +127,10 @@ const App = () => {
   const handleAddInput = (event) => {
     setAddTerm(event.target.value);
   };
+
+  const handleEditInput = (event) => {
+    setEditTerm(event.target.value);
+  }
 
   const handleSearchSubmit = (event) => {
     setUrl(`${API_ENDPOINT}${searchTerm}`);
@@ -132,6 +158,15 @@ const App = () => {
         Add Story
       </button>
 
+      <InputWithLabel
+        id="edit"
+        value={editTerm}
+        isFocused={false}
+        onInputChange={handleEditInput}
+      >
+        <strong>Edit Story:</strong>
+      </InputWithLabel>
+
       <SearchForm
         searchTerm={searchTerm}
         onSearchInput={handleSearchInput}
@@ -145,7 +180,7 @@ const App = () => {
       {stories.isLoading ? (
         <p>Loading.....</p>
       ) : (
-        <List list={stories.data} onRemoveItem={handleRemoveStory} />
+        <List list={stories.data} onRemoveItem={handleRemoveStory} onEditItem={handleEditStory} editTerm={editTerm} />
       )}
     </div>
   );
@@ -191,15 +226,15 @@ const InputWithLabel = ({
   );
 };
 
-const List = ({ list, onRemoveItem }) => (
+const List = ({ list, onRemoveItem, onEditItem, editTerm }) => (
   <ul>
     {list.map((item) => (
-      <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem} />
+      <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem} onEditItem={onEditItem} editTerm={editTerm} />
     ))}
   </ul>
 );
 
-const Item = ({ item, onRemoveItem }) => {
+const Item = ({ item, onRemoveItem, onEditItem, editTerm }) => {
   return (
     <li>
       <span>
@@ -212,6 +247,14 @@ const Item = ({ item, onRemoveItem }) => {
         <button type="button" onClick={() => onRemoveItem(item)}>
           Dismiss
         </button>
+      </span>
+      <span>
+      <button
+        type="button"
+        onClick={() => onEditItem({...item, title: editTerm})}
+      >
+        Edit
+      </button>
       </span>
     </li>
   );
